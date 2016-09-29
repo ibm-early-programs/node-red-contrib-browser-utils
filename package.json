@@ -27,6 +27,7 @@
   ],
   "node-red": {
     "nodes": {
+      "fileinject": "./fileinject/fileinject.js",
       "microphone": "./microphone/microphone.js",
       "camera": "./camera/camera.js"
     }

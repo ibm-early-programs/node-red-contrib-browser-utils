@@ -1,0 +1,144 @@
+<!--
+  Copyright 2013, 2016 IBM Corp.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="fileinject">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="File Inject">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="fileinject">
+    <p>Simple file inject node</p>
+    <p>Press the button to inject a file directly to the flow.</p>
+    <p>File will be sent as part of the <code>msg.payload</code> object.</p>
+</script>
+
+<script type="text/javascript">
+    (function() {
+
+        var id
+        var inputElement = document.createElement('input')
+        inputElement.setAttribute('type', 'file')
+        inputElement.addEventListener('change', injectFile)
+        document.body.appendChild(inputElement)
+
+        function simulate(element, eventName){
+            var options = extend(defaultOptions, arguments[2] || {});
+            var oEvent, eventType = null;
+
+            for (var name in eventMatchers){
+                if (eventMatchers[name].test(eventName)) { eventType = name; break; }
+            }
+
+            if (!eventType)
+                throw new SyntaxError('Only HTMLEvents and MouseEvents interfaces are supported');
+
+            if (document.createEvent){
+                oEvent = document.createEvent(eventType);
+                if (eventType == 'HTMLEvents'){
+                    oEvent.initEvent(eventName, options.bubbles, options.cancelable);
+                }
+                else{
+                    oEvent.initMouseEvent(eventName, options.bubbles, options.cancelable, document.defaultView,
+                    options.button, options.pointerX, options.pointerY, options.pointerX, options.pointerY,
+                    options.ctrlKey, options.altKey, options.shiftKey, options.metaKey, options.button, element);
+                }
+                element.dispatchEvent(oEvent);
+            }
+            else{
+                options.clientX = options.pointerX;
+                options.clientY = options.pointerY;
+                var evt = document.createEventObject();
+                oEvent = extend(evt, options);
+                element.fireEvent('on' + eventName, oEvent);
+            }
+            return element;
+        }
+
+        function extend(destination, source) {
+            for (var property in source)
+              destination[property] = source[property];
+            return destination;
+        }
+
+        var eventMatchers = {
+            'HTMLEvents': /^(?:load|unload|abort|error|select|change|submit|reset|focus|blur|resize|scroll)$/,
+            'MouseEvents': /^(?:click|dblclick|mouse(?:down|up|over|move|out))$/
+        }
+        var defaultOptions = {
+            pointerX: 0,
+            pointerY: 0,
+            button: 0,
+            ctrlKey: false,
+            altKey: false,
+            shiftKey: false,
+            metaKey: false,
+            bubbles: true,
+            cancelable: true
+        }
+
+        function triggerClick(event) {
+          simulate(inputElement, 'click')
+        }
+
+        function injectFile() {
+            var blob;
+            var currentInput = this
+
+            if(currentInput.files.length !== 0) {
+              var file = currentInput.files[0]
+              var reader = new FileReader()
+              reader.addEventListener('load', function(onLoadEvent) {
+                blob = new Blob([onLoadEvent.target.result], {
+                  type: currentInput.files[0].type
+                })
+
+                currentInput.value = ''
+
+                var xhr = new XMLHttpRequest()
+                xhr.open('POST', 'node-red-fileinject/' + id, true)
+                xhr.send(blob)
+              })
+
+              reader.readAsArrayBuffer(file)
+            } else {
+              return
+            }
+        }
+
+        RED.nodes.registerType('fileinject', {
+            category: 'input',
+            defaults: {
+                name: {value: ''}
+            },
+            color: 'rgb(254, 245, 136)',
+            inputs: 0,
+            outputs: 1,
+            icon: 'fileinject.png',
+            paletteLabel: 'file inject',
+            label: function() {
+                return this.name || 'file inject';
+            },
+            labelStyle: function() {
+                return this.name ? 'node_label_italic' : '';
+            },
+            button: {
+                onclick: function(evt){
+                  id = this.id
+                  triggerClick(evt)
+                }
+            }
+        });
+    })();
+</script>
