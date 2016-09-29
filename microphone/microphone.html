@@ -1,0 +1,119 @@
+<!--
+  Copyright 2013, 2016 IBM Corp.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="microphone">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Microphone">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="microphone">
+    <p>A simple microphone node to record audio directly from the web browser</p>
+    <p>Usage:</p>
+    <ol>
+        <li>Note - you must be using <code>https</code> to record</li>
+        <li>Click the <code>button</code> to start recording</li>
+        <li>Click the <code>button</code> again to stop recording</li>
+    </ol>
+    <p>The recorded audio is stored in the nodes <code>msg.payload</code> object</p>
+    <p>To see if the microphone node is supported in your browser check <a href="http://caniuse.com/#feat=stream" target="_blank">this</a> page</p>
+    <p>Supported output formats:</p>
+    <ul>
+        <li>WAV</li>
+    </ul>
+</script>
+
+<script type="text/javascript">
+    (function() {
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
+        window.AudioContext = window.AudioContext || window.webkitAudioContext
+        window.URL = window.URL || window.webkitURL
+
+        $.getScript( 'microphone/js/recorder.js' )
+          .done(function( script, textStatus ) {
+            // script loaded, do nothing
+          })
+          .fail(function( jqxhr, settings, exception ) {
+            console.log('FAILED to load recorder script: '+exception)
+        });
+
+        var instances = {}
+        var audio_context = new AudioContext
+
+        function startRecording(id, stream) {
+            var input = audio_context.createMediaStreamSource(stream)
+            instances[id] = new Recorder(input)
+            instances[id] && instances[id].record()
+        }
+
+        function stopRecording(id, callback) {
+            if(!instances[id]) {
+                return
+            }
+
+            instances[id].stop()
+
+            instances[id].exportWAV(function(blob) {
+                instances[id].clear()
+                instances[id] = null
+
+                callback & callback(id, blob)
+            })
+        }
+
+        function getRecorder(id) {
+            if(!navigator.getUserMedia) {
+                window.alert('Your browser does not support audio recording')
+                return
+            }
+
+            navigator.getUserMedia({audio: true}, function(stream){ startRecording(id, stream) }, function(e) {
+                window.alert(e.message)
+            })
+        }
+
+        function uploadRecord(id, blob) {
+            var xhr = new XMLHttpRequest()
+            xhr.open('POST', 'node-red-microphone/' + id, true)
+            xhr.send(blob)
+        }
+
+        RED.nodes.registerType('microphone', {
+            category: 'input',
+            defaults: {
+                name: {value: ''}
+            },
+            color: 'rgb(204, 230, 171)',
+            inputs: 0,
+            outputs: 1,
+            icon: 'microphone.png',
+            paletteLabel: 'microphone',
+            label: function() {
+                return this.name || 'microphone';
+            },
+            labelStyle: function() {
+                return this.name ? 'node_label_italic' : '';
+            },
+            button: {
+                onclick: function(){
+                    if(instances[this.id]) {
+                        stopRecording(this.id, uploadRecord)
+                    } else {
+                        getRecorder(this.id)
+                    }
+                }
+            }
+        });
+    })();
+</script>
