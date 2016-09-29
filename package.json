@@ -1,0 +1,31 @@
+{
+  "name": "node-red-contrib-browser-utils",
+  "version": "0.0.1",
+  "description": "A collection of Node-RED nodes for browser interaction",
+  "dependencies": {
+  },
+  "license": "Apache-2.0",
+  "keywords": [
+    "node-red",
+    "microphone",
+    "camera",
+    "upload",
+    "bluemix",
+    "watson"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/node-red-contrib-utils/node-red-contrib-browser-utils"
+  },
+  "license": "Apache-2.0",
+  "contributors": [
+    {
+      "name": "Gibson Fahnestock",
+      "email": "gib@uk.ibm.com"
+    }
+  ],
+  "node-red": {
+    "nodes": {
+    }
+  }
+}
