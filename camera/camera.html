@@ -1,0 +1,142 @@
+<!--
+  Copyright 2013, 2016 IBM Corp.
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+  http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+
+<script type="text/x-red" data-template-name="camera">
+    <div class="form-row">
+        <label for="node-input-name"><i class="fa fa-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Camera">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="camera">
+    <p>A simple camera node to capture the current image from the device webcam</p>
+    <p>Usage:</p>
+    <ol>
+        <li>Add the camera node to your flow</li>
+        <li>Click the <code>button</code> capture an image from the webcam</li>
+    </ol>
+    <p>The <code>jpg</code> image is sent as the <code>msg.payload</code> object</p>
+    <p>Supported browsers</p>
+    <ul>
+      <li>Chrome</li>
+      <li>Firefox</li>
+    </ul>
+</script>
+
+
+<script type="text/javascript">
+    (function() {
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
+
+        window.video = document.createElement('video')
+        window.canvas = document.createElement('canvas')
+        canvas.style.display = 'none'
+        canvas.style.display = 'none'
+        var id
+
+        function onCanPlay(evt) {
+          video.removeEventListener('canplay', onCanPlay, false)
+          var width   = 320
+          var height  = video.videoHeight / (video.videoWidth / width)
+
+          if (isNaN(height)) {
+            height = width / (4 / 3)
+          }
+
+          setTimeout(function(evt) {
+
+            video.setAttribute('width', width)
+            video.setAttribute('height', height)
+            canvas.setAttribute('width', width)
+            canvas.setAttribute('height', height)
+
+            var ctx = canvas.getContext('2d')
+            ctx.drawImage(video, 0, 0, width, height)
+
+            canvas.toBlob(function(blob) {
+              uploadRecord(id, blob)
+            })
+          }, 2000)
+        }
+
+        function onStreamReady(id, stream) {
+          video.src = window.URL.createObjectURL(stream)
+
+          video.addEventListener('canplay', onCanPlay, false)
+
+          video.play()
+        }
+
+        function onVideoPlaying(id, evt) {
+          canvas.style.height = video.clientHeight + 'px'
+          canvas.style.width = video.clientWidth + 'px'
+
+          var ctx = canvas.getContext('2d')
+          ctx.drawImage(video, 0, 0)
+
+          canvas.toBlob(function(blob) {
+            uploadRecord(id, blob)
+          })
+        }
+
+        function takeSnapshot(id) {
+          if(!navigator.getUserMedia) {
+              window.alert('Your browser does not support the camera node')
+              return
+          }
+
+          navigator.getUserMedia(
+            {
+              video: true,
+              audio: false
+            },
+            function(stream) {
+              onStreamReady(id, stream)
+            },
+            function(error) {
+              console.log(error)
+            }
+          )
+        }
+
+        function uploadRecord(id, blob) {
+            var xhr = new XMLHttpRequest()
+            xhr.open('POST', 'node-red-camera/' + id, true)
+            xhr.send(blob)
+        }
+
+        RED.nodes.registerType('camera', {
+            category: 'input',
+            defaults: {
+                name: {value: ''}
+            },
+            color: 'rgb(215, 201, 194)',
+            inputs: 0,
+            outputs: 1,
+            icon: 'camera.png',
+            paletteLabel: 'camera',
+            label: function() {
+                return this.name || 'camera';
+            },
+            labelStyle: function() {
+                return this.name ? 'node_label_italic' : '';
+            },
+            button: {
+                onclick: function(){
+                    id = this.id
+                    takeSnapshot(id)
+                }
+            }
+        });
+    })();
+</script>
