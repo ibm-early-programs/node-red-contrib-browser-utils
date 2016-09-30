@@ -1,11 +1,11 @@
 # Node-RED Contrib Browser Utils
 
-<a href="http://nodered.org" target="_new">Node-RED</a> media nodes proposing browser inputs as file upload, camera & microphone.
+[Node-RED](http://nodered.org) nodes for browser functionality such as file upload, camera & microphone.
 
 ## Install
 
 
-Run the following command in the root directory of your Node-RED install
+Run the following command in the root directory of your Node-RED install:
 
     npm install node-red-contrib-browser-utils
 
@@ -13,19 +13,19 @@ Run the following command in the root directory of your Node-RED install
 
 ### Camera
 
-The browser takes a picture by clicking the button next to the node using the camera. The node outputs it as a JPEG buffer.
+The browser takes a picture with the default camera when the button next to the node is clicked. The node outputs it as a JPEG buffer.
 
-The `camera` node has a 2000ms delay to prevent slow camera driver startup causing an issue in some browsers
+The `camera` node has a 2000ms delay to prevent slow camera driver startup causing an issue in some browsers.
 
 
 ###  Microphone
 
-The browser starts recording after clicking the button next to the node and stops it after clicking again. The node outputs it as a WAV buffer.
+The browser starts recording after the button next to the node is clicked and stops it when the button is clicked again. The node outputs it as a WAV buffer.
 
 
 ### File upload
 
-The node accepts any file to be upload and it outputs as a buffer.
+The node accepts a file to be uploaded and outputs it as a buffer.
 
 
 ## Contributing
@@ -35,4 +35,3 @@ For simple typos and fixes please just raise an issue pointing out our mistakes.
 ## Copyright and license
 
 Copyright 2014, 2016 IBM Corp. under the Apache 2.0 license.
-
