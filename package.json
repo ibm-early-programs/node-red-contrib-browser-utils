@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "A collection of Node-RED nodes for browser interaction",
   "dependencies": {
+    "node-red-contrib-play-audio": "2.0.x",
     "body-parser": "^1.15.2"
   },
   "license": "Apache-2.0",
