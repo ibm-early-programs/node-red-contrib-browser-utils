@@ -1,6 +1,6 @@
 {
   "name": "node-red-contrib-browser-utils",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A collection of Node-RED nodes for browser interaction",
   "dependencies": {
     "node-red-contrib-play-audio": "2.0.x",
@@ -17,7 +17,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/node-red-contrib-utils/node-red-contrib-browser-utils"
+    "url": "https://github.com/bm-early-programs/node-red-contrib-browser-utils"
   },
   "license": "Apache-2.0",
   "contributors": [
@@ -28,6 +28,14 @@
     {
       "name": "Yacine Rezgui",
       "email": "rezgui.y@gmail.com"
+    },
+    {
+      "name": "Gibson Fahnestock",
+      "email": "gibfahn@gmail.com"
+    },
+    {
+      "name": "Anna Thomas",
+      "email": "annat21@live.co.uk"
     }
   ],
   "node-red": {
