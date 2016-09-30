@@ -22,8 +22,12 @@
   "license": "Apache-2.0",
   "contributors": [
     {
-      "name": "Gibson Fahnestock",
-      "email": "gib@uk.ibm.com"
+      "name": "Chris Parsons",
+      "email": "christopherkparsons@gmail.com"
+    },
+    {
+      "name": "Yacine Rezgui",
+      "email": "rezgui.y@gmail.com"
     }
   ],
   "node-red": {
