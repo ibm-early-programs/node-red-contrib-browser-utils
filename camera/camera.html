@@ -36,7 +36,7 @@
 
 <script type="text/javascript">
     (function() {
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
 
         window.video = document.createElement('video')
         window.canvas = document.createElement('canvas')
