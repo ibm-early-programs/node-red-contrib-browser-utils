@@ -71,7 +71,7 @@
                 callback & callback(id, blob)
             })
 
-            setStatus(false, id);
+            setMicStatus(false, id);
         }
 
         function getRecorder(id) {
@@ -80,10 +80,9 @@
                 return
             }
 
-            setStatus(true, id)
             navigator.getUserMedia({audio: true},
               function(stream){
-                //setStatus(true, id)
+                setMicStatus(true, id)
                 startRecording(id, stream)
               },
               function(e) {
@@ -97,7 +96,7 @@
             xhr.send(blob)
         }
 
-        function setStatus(record, id) {
+        function setMicStatus(record, id) {
           $.getJSON('node-red-microphone/status', {status: record, id: id})
             .done(function () {})
             .fail(function (err) {
