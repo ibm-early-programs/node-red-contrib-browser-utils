@@ -70,6 +70,8 @@
 
                 callback & callback(id, blob)
             })
+
+            setStatus(false, id);
         }
 
         function getRecorder(id) {
@@ -78,7 +80,13 @@
                 return
             }
 
-            navigator.getUserMedia({audio: true}, function(stream){ startRecording(id, stream) }, function(e) {
+            setStatus(true, id)
+            navigator.getUserMedia({audio: true},
+              function(stream){
+                //setStatus(true, id)
+                startRecording(id, stream)
+              },
+              function(e) {
                 window.alert(e.message)
             })
         }
@@ -87,6 +95,15 @@
             var xhr = new XMLHttpRequest()
             xhr.open('POST', 'node-red-microphone/' + id, true)
             xhr.send(blob)
+        }
+
+        function setStatus(record, id) {
+          $.getJSON('node-red-microphone/status', {status: record, id: id})
+            .done(function () {})
+            .fail(function (err) {
+              console.log(err);
+            })
+            .always(function () {});
         }
 
         RED.nodes.registerType('microphone', {
