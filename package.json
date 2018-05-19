@@ -1,9 +1,9 @@
 {
   "name": "node-red-contrib-browser-utils",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "A collection of Node-RED nodes for browser interaction",
   "dependencies": {
-    "node-red-contrib-play-audio": "2.0.x",
+    "node-red-contrib-play-audio": "^2.3.1",
     "body-parser": "^1.15.2"
   },
   "license": "Apache-2.0",

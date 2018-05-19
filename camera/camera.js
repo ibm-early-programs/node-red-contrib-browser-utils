@@ -24,6 +24,19 @@ module.exports = function (RED) {
     var requestSize = '50mb';
 
 
+    RED.httpAdmin.get('/node-red-camera/status', function (req, res) {
+      var n = RED.nodes.getNode(req.query.id)
+      var status = {};
+      if ('true' == req.query.status) {
+        status = {fill:'red', shape:'dot', text:'taking picture...'}
+      }
+      if (n) {
+        n.status(status);
+      }
+      res.json({});
+    });
+
+
     RED.httpAdmin.post('/node-red-camera/:id', bodyParser.raw({ type: '*/*', limit: requestSize }), function(req,res) {
 
         var node = RED.nodes.getNode(req.params.id)
@@ -31,8 +44,10 @@ module.exports = function (RED) {
         if (node != null) {
             try {
                 node.receive({payload: req.body})
+                node.status({})
                 res.sendStatus(200)
             } catch(err) {
+                node.status({fill:'red', shape:'dot', text:'upload failed'});
                 res.sendStatus(500)
                 node.error(RED._("upload-camera.failed", { error: err.toString() }))
             }

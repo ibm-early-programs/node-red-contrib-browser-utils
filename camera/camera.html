@@ -89,11 +89,22 @@
           })
         }
 
+        function setCameraStatus(record, id) {
+          $.getJSON('node-red-camera/status', {status: record, id: id})
+            .done(function () {})
+            .fail(function (err) {
+              console.log(err);
+            })
+            .always(function () {});
+        }
+
         function takeSnapshot(id) {
           if(!navigator.getUserMedia) {
               window.alert('Your browser does not support the camera node')
               return
           }
+
+          setCameraStatus(true, id)
 
           navigator.getUserMedia(
             {

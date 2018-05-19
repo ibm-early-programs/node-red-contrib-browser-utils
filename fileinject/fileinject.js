@@ -1,5 +1,5 @@
 /**
- * Copyright 2013, 2016 IBM Corp.
+ * Copyright 2013, 2016, 2018 IBM Corp.
  *
  * Licensed under the Apache License, Version 2.0 (the 'License');
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,19 @@ module.exports = function (RED) {
     RED.nodes.createNode(this, config);
     var node = this;
 
+    RED.httpAdmin.get('/node-red-fileinject/status', function (req, res) {
+      var n = RED.nodes.getNode(req.query.id)
+      var status = {};
+      if ('true' == req.query.status) {
+        status = {fill:'red', shape:'dot', text:'sending file...'}
+      }
+      if (n) {
+        n.status(status);
+      }
+      res.json({});
+    });
+
+
     RED.httpAdmin.post('/node-red-fileinject/:id', bodyParser.raw({ type: '*/*', limit: requestSize }), function(req,res) {
 
         var node = RED.nodes.getNode(req.params.id)
@@ -30,6 +43,7 @@ module.exports = function (RED) {
         if (node != null) {
             try {
                 node.receive({payload: req.body})
+                node.status({})
                 res.sendStatus(200)
             } catch(err) {
                 res.sendStatus(500)

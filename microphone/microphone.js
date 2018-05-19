@@ -20,9 +20,32 @@ module.exports = function (RED) {
   var requestSize = '50mb'
   var requestType = 'audio/wav'
 
+  const MICSTATUS = {
+      OFF : '1',
+      ON  : '2',
+      CONTEXTERROR : '4'
+  }
+
   function Node (config) {
     RED.nodes.createNode(this, config);
     var node = this;
+
+    RED.httpAdmin.get('/node-red-microphone/status', function (req, res) {
+      var n = RED.nodes.getNode(req.query.id)
+      var status = {};
+      switch(req.query.status) {
+      case MICSTATUS.ON :
+          status = {fill:'red', shape:'dot', text:'recording...'}
+          break;
+      case MICSTATUS.CONTEXTERROR :
+          status = {fill:'red', shape:'dot', text:'error resuming audio context'}
+          break;
+      }
+      if (n) {
+        n.status(status);
+      }
+      res.json({});
+    });
 
     RED.httpAdmin.post('/node-red-microphone/:id', bodyParser.raw({ type: requestType, limit: requestSize }), function(req,res) {
 
@@ -33,6 +56,7 @@ module.exports = function (RED) {
                 node.receive({payload: req.body})
                 res.sendStatus(200)
             } catch(err) {
+                node.status({fill:'red', shape:'dot', text:'upload failed'});
                 res.sendStatus(500)
                 node.error(RED._("upload-microphone.failed", { error: err.toString() }))
             }
