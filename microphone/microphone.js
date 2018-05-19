@@ -20,6 +20,12 @@ module.exports = function (RED) {
   var requestSize = '50mb'
   var requestType = 'audio/wav'
 
+  const MICSTATUS = {
+      OFF : '1',
+      ON  : '2',
+      CONTEXTERROR : '4'
+  }
+
   function Node (config) {
     RED.nodes.createNode(this, config);
     var node = this;
@@ -27,8 +33,13 @@ module.exports = function (RED) {
     RED.httpAdmin.get('/node-red-microphone/status', function (req, res) {
       var n = RED.nodes.getNode(req.query.id)
       var status = {};
-      if ('true' == req.query.status) {
-        status = {fill:'red', shape:'dot', text:'recording...'}
+      switch(req.query.status) {
+      case MICSTATUS.ON :
+          status = {fill:'red', shape:'dot', text:'recording...'}
+          break;
+      case MICSTATUS.CONTEXTERROR :
+          status = {fill:'red', shape:'dot', text:'error resuming audio context'}
+          break;
       }
       if (n) {
         n.status(status);

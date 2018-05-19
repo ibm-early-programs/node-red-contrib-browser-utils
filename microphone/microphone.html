@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013, 2016 IBM Corp.
+  Copyright 2013, 2016, 2018 IBM Corp.
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -40,6 +40,12 @@
         window.AudioContext = window.AudioContext || window.webkitAudioContext
         window.URL = window.URL || window.webkitURL
 
+        const MICSTATUS = {
+            OFF : '1',
+            ON  : '2',
+            CONTEXTERROR : '4'
+        }
+
         $.getScript( 'microphone/js/recorder.js' )
           .done(function( script, textStatus ) {
             // script loaded, do nothing
@@ -51,10 +57,31 @@
         var instances = {}
         var audio_context = new AudioContext
 
+        function checkAudioContextState() {
+            var p = new Promise(function resolver(resolve, reject) {
+                if ('running' === audio_context.state) {
+                    resolve()
+                } else {
+                    audio_context.resume()
+                    .then(() => {
+                        resolve()
+                    })
+                }
+            });
+            return p;
+        }
+
         function startRecording(id, stream) {
-            var input = audio_context.createMediaStreamSource(stream)
-            instances[id] = new Recorder(input)
-            instances[id] && instances[id].record()
+            checkAudioContextState()
+            .then(() => {
+                var input = audio_context.createMediaStreamSource(stream)
+                instances[id] = new Recorder(input)
+                instances[id] && instances[id].record()
+            })
+            .catch(() => {
+                console.log('Audio Context Error')
+                setMicStatus(MICSTATUS.CONTEXTERROR, id)
+            })
         }
 
         function stopRecording(id, callback) {
@@ -71,7 +98,7 @@
                 callback & callback(id, blob)
             })
 
-            setMicStatus(false, id);
+            setMicStatus(MICSTATUS.OFF, id);
         }
 
         function getRecorder(id) {
@@ -82,7 +109,7 @@
 
             navigator.getUserMedia({audio: true},
               function(stream){
-                setMicStatus(true, id)
+                setMicStatus(MICSTATUS.ON, id)
                 startRecording(id, stream)
               },
               function(e) {
