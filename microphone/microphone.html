@@ -59,16 +59,15 @@
 
         function checkAudioContextState() {
             var p = new Promise(function resolver(resolve, reject) {
-                if ('running' === audio_context.state) {
-                    resolve()
-                } else {
-                    audio_context.resume()
-                    .then(() => {
-                        resolve()
-                    })
-                }
+              if (audio_context.state && 'running' !== audio_context.state && audio_context.resume) {
+                  audio_context.resume().then(() => {
+                      resolve()
+                  })
+              } else {
+                resolve()
+              }
             });
-            return p;
+            return p
         }
 
         function startRecording(id, stream) {
