@@ -70,7 +70,13 @@
         }
 
         function onStreamReady(id, stream) {
-          video.src = window.URL.createObjectURL(stream)
+          // As of Chrome 71 createObjectURL is deprecated so ty direct
+          // access first
+          try {
+            video.srcObject = stream;
+          } catch (error) {
+            video.src = window.URL.createObjectURL(stream)
+          }
 
           video.addEventListener('canplay', onCanPlay, false)
 
