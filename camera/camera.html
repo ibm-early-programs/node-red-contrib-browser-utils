@@ -72,6 +72,7 @@
         function onStreamReady(id, stream) {
           // As of Chrome 71 createObjectURL is deprecated so ty direct
           // access first
+          // https://developer.mozilla.org/en-US/docs/Web/API/HTMLMediaElement/srcObject
           try {
             video.srcObject = stream;
           } catch (error) {
