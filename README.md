@@ -34,4 +34,4 @@ For simple typos and fixes please just raise an issue pointing out our mistakes.
 
 ## Copyright and license
 
-Copyright 2014, 2016 IBM Corp. under the Apache 2.0 license.
+Copyright 2014, 2016, 2019 IBM Corp. under the Apache 2.0 license.
