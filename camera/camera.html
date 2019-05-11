@@ -36,7 +36,8 @@
 
 <script type="text/javascript">
     (function() {
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
         window.video = document.createElement('video')
         window.canvas = document.createElement('canvas')
@@ -106,25 +107,16 @@
         }
 
         function takeSnapshot(id) {
-          if(!navigator.getUserMedia) {
-              window.alert('Your browser does not support the camera node')
-              return
-          }
-
-          setCameraStatus(true, id)
-
-          navigator.getUserMedia(
-            {
-              video: true,
-              audio: false
-            },
-            function(stream) {
+          const constraints = {video : true, audio : false};
+          navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(stream) {
+              setCameraStatus(true, id)
               onStreamReady(id, stream)
-            },
-            function(error) {
-              console.log(error)
-            }
-          )
+            })
+            .catch(function(err) {
+                window.alert('Your browser does not support the camera node')
+                console.log(err)
+            })
         }
 
         function uploadRecord(id, blob) {
