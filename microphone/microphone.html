@@ -36,9 +36,10 @@
 
 <script type="text/javascript">
     (function() {
-        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia
-        window.AudioContext = window.AudioContext || window.webkitAudioContext
-        window.URL = window.URL || window.webkitURL
+        navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia || navigator.msGetUserMedia;
+        window.AudioContext = window.AudioContext || window.webkitAudioContext || window.mozAudioContext || window.oAudioContext || window.msAudioContext;;
+
+        window.URL = window.URL || window.webkitURL || window.mozURL || window.msURL;
 
         const MICSTATUS = {
             OFF : '1',
@@ -101,6 +102,20 @@
         }
 
         function getRecorder(id) {
+          const constraints = {video : false, audio : true};
+          navigator.mediaDevices.getUserMedia(constraints)
+            .then(function(stream) {
+              setMicStatus(MICSTATUS.ON, id)
+              startRecording(id, stream)
+            })
+            .catch(function(err) {
+                window.alert('Your browser does not support audio recording')
+                console.log(err)
+            })
+        }
+
+
+        function getRecorderXX(id) {
             if(!navigator.getUserMedia) {
                 window.alert('Your browser does not support audio recording')
                 return
