@@ -112,14 +112,16 @@
               setNodeStatus(true, id)
 
               reader.addEventListener('load', function(onLoadEvent) {
+                  const filename = currentInput.files[0].name;
                 blob = new Blob([onLoadEvent.target.result], {
                   type: currentInput.files[0].type
-                })
+                });
 
                 currentInput.value = ''
 
                 var xhr = new XMLHttpRequest()
                 xhr.open('POST', 'node-red-fileinject/' + id, true)
+                xhr.setRequestHeader('x-filename', filename);
                 xhr.send(blob)
               })
 

@@ -42,7 +42,7 @@ module.exports = function (RED) {
 
         if (node != null) {
             try {
-                node.receive({payload: req.body})
+                node.receive({payload: req.body, filename: req.headers["x-filename"], mimetype: req.headers["content-type"]})
                 node.status({})
                 res.sendStatus(200)
             } catch(err) {
