@@ -113,7 +113,6 @@
 
               reader.addEventListener('load', function(onLoadEvent) {
                   var filename = file.name
-                  console.log('Sending file with name ' + filename)
                   blob = new Blob([onLoadEvent.target.result], {
                   type: file.type
                 });
