@@ -1,9 +1,9 @@
 {
   "name": "node-red-contrib-browser-utils",
-  "version": "0.0.4",
+  "version": "0.0.10",
   "description": "A collection of Node-RED nodes for browser interaction",
   "dependencies": {
-    "node-red-contrib-play-audio": "2.0.x",
+    "node-red-contrib-play-audio": "^2.3.2",
     "body-parser": "^1.15.2"
   },
   "license": "Apache-2.0",
@@ -35,6 +35,10 @@
     {
       "name": "Anna Thomas",
       "email": "annat21@live.co.uk"
+    },
+    {
+      "name": "Soheel Chughtai",
+      "email": "soheel_chughtai@uk.ibm.com"
     }
   ],
   "node-red": {

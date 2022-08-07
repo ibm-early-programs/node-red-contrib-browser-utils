@@ -1,5 +1,5 @@
 <!--
-  Copyright 2013, 2016 IBM Corp.
+  Copyright 2013, 2016, 2018, 2021 IBM Corp.
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
@@ -92,6 +92,15 @@
           simulate(inputElement, 'click')
         }
 
+        function setNodeStatus(uploading, id) {
+          $.getJSON('node-red-fileinject/status', {status: uploading, id: id})
+            .done(function () {})
+            .fail(function (err) {
+              console.log(err);
+            })
+            .always(function () {});
+        }
+
         function injectFile() {
             var blob;
             var currentInput = this
@@ -99,15 +108,20 @@
             if(currentInput.files.length !== 0) {
               var file = currentInput.files[0]
               var reader = new FileReader()
+
+              setNodeStatus(true, id)
+
               reader.addEventListener('load', function(onLoadEvent) {
-                blob = new Blob([onLoadEvent.target.result], {
-                  type: currentInput.files[0].type
-                })
+                  var filename = file.name
+                  blob = new Blob([onLoadEvent.target.result], {
+                  type: file.type
+                });
 
                 currentInput.value = ''
 
                 var xhr = new XMLHttpRequest()
                 xhr.open('POST', 'node-red-fileinject/' + id, true)
+                xhr.setRequestHeader('x-filename', filename);
                 xhr.send(blob)
               })
 

@@ -13,7 +13,7 @@ Run the following command in the root directory of your Node-RED install:
 
 ### Camera
 
-The browser takes a picture with the default camera when the button next to the node is clicked. The node outputs it as a JPEG buffer.
+The browser takes a picture with the default camera when the button next to the node is clicked. The node outputs it as a PNG buffer.
 
 The `camera` node has a 2000ms delay to prevent slow camera driver startup causing an issue in some browsers.
 
@@ -34,4 +34,4 @@ For simple typos and fixes please just raise an issue pointing out our mistakes.
 
 ## Copyright and license
 
-Copyright 2014, 2016 IBM Corp. under the Apache 2.0 license.
+Copyright 2014, 2016, 2019 IBM Corp. under the Apache 2.0 license.
