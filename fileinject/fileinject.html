@@ -114,7 +114,7 @@
               reader.addEventListener('load', function(onLoadEvent) {
                   var filename = file.name
                   blob = new Blob([onLoadEvent.target.result], {
-                  type: file.type
+                  type: (file.type=='')?'application/octet-stream':file.type
                 });
 
                 currentInput.value = ''
